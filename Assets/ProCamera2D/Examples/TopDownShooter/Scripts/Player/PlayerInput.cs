@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
 {
@@ -8,11 +9,13 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
         public float RunSpeed = 12;
         public float Acceleration = 30;
         public int playerNum;
+        public GameObject box;
         float _currentSpeedH;
         float _currentSpeedV;
         Vector3 _amountToMove;
         int _totalJumps;
         float groundPos;
+        Collider[] hitBox;
         CharacterController _characterController;
 
         bool _movementAllowed = true;
@@ -80,7 +83,24 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
         void Hit() {
             if (Input.GetButtonDown("Fire1_" + playerNum)) {
                 Debug.Log("hit"+ playerNum);
+                StartCoroutine(HitBox());
+                hitBox = Physics.OverlapBox(box.transform.position, box.transform.localScale);
+                for (int i = 0; i < hitBox.Length; i++)
+                {
+                    if(hitBox[i].tag == "Player" && hitBox[i].name != this.name)
+                    {
+                        Debug.Log(hitBox[i].name);
+                    }
+                }
             }
         }
+
+        IEnumerator HitBox (){
+            box.SetActive(true);
+            yield return new WaitForSeconds(0.25f);
+            box.SetActive(false);
+        }
+
+        
     }
 }
