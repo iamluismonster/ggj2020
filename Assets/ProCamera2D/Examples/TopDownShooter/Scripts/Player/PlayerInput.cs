@@ -7,12 +7,12 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
     {
         public float RunSpeed = 12;
         public float Acceleration = 30;
-
+        public int playerNum;
         float _currentSpeedH;
         float _currentSpeedV;
         Vector3 _amountToMove;
         int _totalJumps;
-
+        float groundPos;
         CharacterController _characterController;
 
         bool _movementAllowed = true;
@@ -36,6 +36,8 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
                         _movementAllowed = true; 
                     });
             }
+            _amountToMove = new Vector3();
+            groundPos = transform.position.y;
         }
 
         void Update()
@@ -43,16 +45,21 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
             if (!_movementAllowed)
                 return;
 
-            var targetSpeedH = Input.GetAxis("Horizontal") * RunSpeed;
+            var targetSpeedH = Input.GetAxis("Horizontal" + playerNum) * RunSpeed;
             _currentSpeedH = IncrementTowards(_currentSpeedH, targetSpeedH, Acceleration);
 
-            var targetSpeedV = Input.GetAxis("Vertical") * RunSpeed;
+            var targetSpeedV = Input.GetAxis("Vertical" + playerNum) * RunSpeed;
             _currentSpeedV = IncrementTowards(_currentSpeedV, targetSpeedV, Acceleration);
 
             _amountToMove.x = _currentSpeedH;
             _amountToMove.z = _currentSpeedV;
 
             _characterController.Move(_amountToMove * Time.deltaTime);
+            
+            if(_amountToMove.magnitude != 0)
+                transform.rotation = Quaternion.LookRotation(_amountToMove.normalized);
+
+            Hit();
         }
 
         // Increase n towards target by speed
@@ -67,6 +74,12 @@ namespace Com.LuisPedroFonseca.ProCamera2D.TopDownShooter
                 float dir = Mathf.Sign(target - n); 
                 n += a * Time.deltaTime * dir;
                 return (dir == Mathf.Sign(target - n)) ? n : target;
+            }
+        }
+
+        void Hit() {
+            if (Input.GetButtonDown("Fire1_" + playerNum)) {
+                Debug.Log("hit"+ playerNum);
             }
         }
     }
